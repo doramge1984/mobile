@@ -1,0 +1,690 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>[hidden]{display:none!important}body{margin:0}img{max-width:100%}</style>
+<title>모바일 AI 연수</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Noto+Sans+KR:wght@400;500;700;800&display=swap">
+<style>
+/* Layout: 왼쪽 고정 차례(데스크톱) + 본문 한 줄 흐름. 회차(1차/2차)는 굵은 띠, 단계는 번호 원. */
+:root{
+  --paper:#f6f7f4; --surface:#ffffff; --ink:#18231f; --muted:#5d6a64; --line:#dde3de;
+  --accent:#1f5e50; --accent-soft:#e3efe9; --gold:#a8701c; --gold-soft:#f7ecd8; --warn:#b3382c; --warn-soft:#fbe9e6;
+  --code:#f0f2ef;
+  --f-display:"Gowun Batang","Noto Serif KR",serif;
+  --f-body:"Noto Sans KR",-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+  --f-mono:ui-monospace,"SFMono-Regular",Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --paper:#121816; --surface:#1a2220; --ink:#e7ece9; --muted:#9aa8a1; --line:#2d3834;
+  --accent:#6cc2a9; --accent-soft:#1d332c; --gold:#e0b062; --gold-soft:#33291a; --warn:#f08a7e; --warn-soft:#3a201d;
+  --code:#141b19; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#121816; --surface:#1a2220; --ink:#e7ece9; --muted:#9aa8a1; --line:#2d3834;
+  --accent:#6cc2a9; --accent-soft:#1d332c; --gold:#e0b062; --gold-soft:#33291a; --warn:#f08a7e; --warn-soft:#3a201d;
+  --code:#141b19; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--paper);color:var(--ink);font-family:var(--f-body);font-size:16.5px;line-height:1.7;word-break:keep-all}
+a{color:var(--accent)}
+.wrap{max-width:1180px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 64px;display:grid;grid-template-columns:240px minmax(0,1fr);gap:48px}
+@media (max-width:960px){.wrap{grid-template-columns:minmax(0,1fr);gap:0}}
+
+/* hero */
+.hero{grid-column:1/-1;padding-block:48px 32px;border-bottom:1px solid var(--line);margin-bottom:8px;display:grid;grid-template-columns:minmax(0,1fr);gap:24px;align-items:end}
+.hero .eyebrow{font-size:13px;letter-spacing:.08em;color:var(--gold);font-weight:700}
+.hero h1{font-family:var(--f-display);font-size:clamp(34px,6vw,56px);line-height:1.15;margin:8px 0 12px;text-wrap:balance}
+.hero h1 em{font-style:normal;color:var(--accent)}
+.hero p{margin:0;color:var(--muted);max-width:60ch}
+.hero img{width:120px;height:120px;border-radius:50%;border:3px solid var(--surface);box-shadow:0 0 0 1px var(--line)}
+.days{display:flex;flex-wrap:wrap;gap:12px;margin-top:20px}
+.days a{display:flex;gap:10px;align-items:baseline;text-decoration:none;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 16px}
+.days a b{color:var(--accent);font-variant-numeric:tabular-nums}
+@media (max-width:600px){.hero{grid-template-columns:1fr}.hero img{width:84px;height:84px;order:-1}}
+
+/* toc */
+nav.toc{position:sticky;top:env(safe-area-inset-top,0px);align-self:start;max-height:100vh;overflow:auto;padding-block:24px;font-size:14.5px}
+nav.toc h2{font-size:12px;letter-spacing:.1em;color:var(--muted);margin:18px 0 6px;font-weight:700}
+nav.toc ol{list-style:none;margin:0;padding:0;display:grid;gap:2px}
+nav.toc a{display:block;padding:5px 10px;border-radius:6px;text-decoration:none;color:var(--ink);line-height:1.4}
+nav.toc a:hover{background:var(--accent-soft)}
+nav.toc a.on{background:var(--accent-soft);color:var(--accent);font-weight:700}
+nav.toc .ver{margin-top:20px;font-size:12.5px;color:var(--muted);line-height:1.5}
+.mtoc{display:none}
+@media (max-width:960px){nav.toc{display:none}.mtoc{display:block;margin:16px 0 0;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 16px}
+ .mtoc summary{font-weight:700;cursor:pointer}.mtoc ol{margin:8px 0;padding-left:20px;font-size:15px}.mtoc li{margin:3px 0}}
+
+main{min-width:0}
+.daybar{margin:48px 0 8px;padding:18px 22px;border-radius:12px;background:var(--accent);color:var(--paper);display:flex;flex-wrap:wrap;gap:4px 16px;align-items:baseline}
+.daybar b{font-family:var(--f-display);font-size:26px}
+.daybar span{opacity:.85}
+section.mod{padding-top:40px;scroll-margin-top:12px}
+.mod>header{display:flex;gap:14px;align-items:center;margin-bottom:14px}
+.num{flex:none;width:40px;height:40px;border-radius:50%;background:var(--accent);color:var(--paper);display:grid;place-items:center;font-weight:800;font-variant-numeric:tabular-nums}
+.num.alt{background:var(--gold)}
+h2.t{font-family:var(--f-display);font-size:28px;line-height:1.3;margin:0;text-wrap:balance}
+h2.t small{display:block;font-family:var(--f-body);font-size:14px;color:var(--muted);font-weight:500}
+h3{font-size:19px;margin:30px 0 10px;display:flex;gap:10px;align-items:center}
+h3 .s{flex:none;width:26px;height:26px;border-radius:50%;border:2px solid var(--accent);color:var(--accent);display:grid;place-items:center;font-size:13px;font-weight:800}
+p{margin:8px 0;max-width:72ch}
+.lead{color:var(--muted)}
+
+/* route */
+.route{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;margin:10px 0;padding:12px 14px;background:var(--surface);border:1px solid var(--line);border-radius:10px}
+.route .who{font-weight:800;color:var(--gold);min-width:5.5em}
+.route ol{list-style:none;display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0}
+.route li{background:var(--accent-soft);color:var(--ink);padding:3px 10px;border-radius:6px;font-weight:500;font-size:15px}
+.route li+li::before{content:"›";margin-right:8px;color:var(--muted);font-weight:700}
+.route li+li{display:flex;align-items:center}
+.route .tip{flex-basis:100%;margin:0;color:var(--muted);font-size:14.5px}
+
+.note{margin:14px 0;padding:12px 16px;border-radius:10px;background:var(--gold-soft);max-width:72ch}
+.note.warn{background:var(--warn-soft)}
+.note.warn b:first-child{color:var(--warn)}
+.note b:first-child{margin-right:6px}
+
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;margin:14px 0}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 16px}
+.card b{display:block;margin-bottom:2px}
+.card span{color:var(--muted);font-size:15px}
+
+/* screenshots */
+.shots{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:16px;margin:16px 0;align-items:start}
+.shots.five{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+.shots.three{grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.shots.wide{grid-template-columns:repeat(auto-fill,minmax(300px,1fr))}
+.shots.one{grid-template-columns:minmax(0,760px)}
+figure{margin:0;min-width:0}
+figure button{all:unset;cursor:zoom-in;display:block;border-radius:10px;overflow:hidden;border:1px solid var(--line);background:var(--surface)}
+figure button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+figure img{display:block;width:100%;height:auto}
+figcaption{font-size:14px;margin-top:6px;color:var(--ink);font-weight:500;line-height:1.45}
+.src{font-size:13px;color:var(--muted)}
+
+/* copy blocks */
+.copy{margin:16px 0;background:var(--surface);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.copy .bar{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:1px solid var(--line)}
+.copy .bar span{font-size:14px;color:var(--muted)}
+.copy pre{margin:0;padding:14px 16px;background:var(--code);font-family:var(--f-body);font-size:14.5px;line-height:1.65;white-space:pre-wrap;word-break:break-word;max-height:340px;overflow:auto}
+.copy pre.mono{font-family:var(--f-mono);font-size:13px;white-space:pre;word-break:normal}
+.copy.short pre{max-height:none}
+.btn{appearance:none;border:0;cursor:pointer;font:inherit;font-weight:700;font-size:15px;padding:8px 16px;border-radius:8px;background:var(--accent);color:var(--paper)}
+.btn:hover{filter:brightness(1.08)}
+.btn:focus-visible,.chip:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.btn.done{background:var(--gold)}
+a.btn{display:inline-block;text-decoration:none;margin:6px 8px 6px 0}
+.examples{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px;margin:14px 0}
+.examples .copy{margin:0;display:flex;flex-direction:column}
+.examples pre{flex:1}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
+.chip{appearance:none;font:inherit;font-size:15px;cursor:pointer;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:999px;padding:6px 14px}
+.chip:hover{border-color:var(--accent);color:var(--accent)}
+.chip.done{background:var(--accent-soft);border-color:var(--accent)}
+
+details.faq{border-bottom:1px solid var(--line);padding:10px 0;max-width:72ch}
+details.faq summary{cursor:pointer;font-weight:700}
+details.faq p{color:var(--muted);margin:6px 0 2px}
+
+.table{overflow-x:auto;margin:14px 0;border:1px solid var(--line);border-radius:10px}
+table{border-collapse:collapse;width:100%;font-size:14px;background:var(--surface);font-variant-numeric:tabular-nums}
+th,td{padding:8px 10px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}
+th{background:var(--accent-soft)}
+details.toggle{margin:12px 0;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 16px}
+details.toggle summary{cursor:pointer;font-weight:700;color:var(--accent)}
+details.toggle[open] summary{margin-bottom:6px}
+.video{max-width:360px;margin:12px 0}.video video{display:block;width:100%;height:auto;border-radius:12px;border:1px solid var(--line);background:#000}
+.kk{margin:16px 0;border:1px solid var(--line);border-radius:14px;background:var(--surface);overflow:hidden}
+.kk-head{display:flex;gap:12px;align-items:center;padding:14px 18px;background:var(--accent);color:var(--paper);font-size:19px}
+.kk-q{flex:none;width:34px;height:34px;border-radius:9px;background:#fee500;color:#3a1d1d;display:grid;place-items:center;font-weight:900}
+.kk-steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px;padding:14px}
+.kk-step{border:1px solid var(--line);border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:10px;background:var(--paper)}
+.kk-step p{margin:0;font-size:15px;color:var(--ink)}
+.kk-t{font-weight:800;display:flex;gap:8px;align-items:center}
+.kk-n{flex:none;width:26px;height:26px;border-radius:50%;background:var(--accent);color:var(--paper);display:grid;place-items:center;font-size:14px}
+.kk-phone{height:150px;border-radius:16px;border:5px solid #24292c;background:#fff;padding:12px;display:flex;flex-direction:column;gap:10px;justify-content:center;color:#1b1f1d}
+.kk-phone.dark{background:#2c3330;color:#fff;align-items:center}
+.kk-bar{display:flex;align-items:center;gap:8px;border:3px solid #e52525;border-radius:999px;padding:5px 10px;font-size:14px}
+.kk-mag{width:11px;height:11px;border:2px solid #555;border-radius:50%}
+.kk-x{margin-left:auto;color:#888}
+.kk-app{display:flex;align-items:center;gap:8px}
+.kk-icon{flex:none;width:38px;height:38px;border-radius:10px;background:#fee500;color:#3a1d1d;font-size:16px;font-weight:900;display:grid;place-items:center}
+.kk-name{font-size:14px;font-weight:700;line-height:1.2}.kk-name small{display:block;font-weight:400;color:#777;font-size:11px}
+.kk-btn{margin-left:auto;background:#1a7f4b;color:#fff;font-size:12px;font-weight:700;border-radius:999px;padding:5px 10px}
+.kk-card{background:#fff;color:#1b1f1d;border-radius:10px;padding:10px 18px;text-align:center;font-weight:700;font-size:14px;line-height:1.3}.kk-card small{font-weight:400;color:#666}
+.kk-pill{border:3px solid #e52525;border-radius:999px;padding:4px 18px;font-size:14px;background:#4a524f}
+.kk-pw{display:flex;align-items:center;gap:8px;font-size:14px;padding:4px 10px;border-radius:10px}
+.kk-pw.on{border:3px solid #e52525}
+.kk-dot{width:28px;height:28px;border-radius:50%;background:#59605d;display:grid;place-items:center;font-size:15px}
+.kk-pw.on .kk-dot{background:#1a9b5a}
+.kk-more{border-top:1px solid var(--line);padding:12px 18px;background:var(--gold-soft)}
+.kk-more ul{margin:6px 0 0;padding-left:20px;display:grid;gap:2px;font-size:15px}
+.rules{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:10px;margin:12px 0}
+.rule{display:flex;gap:12px;align-items:flex-start;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+.rule .rn{flex:none;width:30px;height:30px;border-radius:50%;background:var(--accent);color:var(--paper);display:grid;place-items:center;font-weight:800;font-size:14px;font-variant-numeric:tabular-nums}
+.rule b{display:block}.rule span{display:block;font-size:15px}.rule small{display:block;color:var(--muted);font-size:13.5px;margin-top:2px}
+.cf{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px;margin:14px 0}
+.cf-card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.cf-tag{align-self:flex-start;background:var(--accent);color:var(--paper);font-size:12.5px;font-weight:700;border-radius:999px;padding:3px 12px}
+.cf-card h4{margin:0;font-size:20px;font-family:var(--f-display);text-wrap:balance}
+.cf-steps{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.cf-s{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:10px;position:relative}
+.cf-s.prep{background:var(--accent-soft)}
+.cf-s small{display:block;color:var(--accent);font-weight:800;font-size:12px}
+.cf-s b{display:block;font-size:14.5px;line-height:1.35;margin-top:2px}
+@media (max-width:520px){.cf-steps{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.cf-two{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:8px}
+.cf-two div{border-top:3px solid var(--accent);background:var(--paper);border-radius:0 0 10px 10px;padding:10px 12px}
+.cf-two b{display:block}.cf-two span{display:block;font-size:14.5px;color:var(--muted)}
+.cf-tip{margin:0;font-size:14px;background:var(--gold-soft);border-radius:10px;padding:8px 12px}
+.cf-note{margin:0;font-size:14px;color:var(--muted)}
+.cf-ol{margin:0;padding-left:26px;font-size:19px;font-weight:700;display:grid;gap:6px}
+.cf-ol.small{font-size:15px;font-weight:500}
+.cf-chat{display:flex;flex-direction:column;align-items:flex-end;gap:8px;background:var(--paper);border-radius:12px;padding:12px}
+.cf-photo{display:flex;flex-direction:column;align-items:center;gap:4px;font-size:12px;color:var(--muted)}
+.cf-photo span{width:64px;height:72px;border-radius:12px;background:linear-gradient(160deg,#c9d3cf,#9fb0aa)}
+.cf-bubble{max-width:92%;background:#efe9fb;color:#3b2f57;border-radius:14px 14px 4px 14px;padding:10px 12px;font-size:14px;line-height:1.55}
+.cf-bubble mark{background:#ffe066;color:#1b1f1d;padding:0 3px;border-radius:3px}
+.pair{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,340px);gap:16px;align-items:start;margin:12px 0}
+.pair.tall{grid-template-columns:minmax(0,1fr) minmax(0,200px)}
+.pair>div{min-width:0}.pair .shots{margin:0;grid-template-columns:minmax(0,1fr)}.pair .copy{margin:0}
+@media (max-width:640px){.pair,.pair.tall{grid-template-columns:minmax(0,1fr)}.pair.tall .shots{max-width:220px}}
+.steps-b{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px;margin:10px 0}
+.sb{display:flex;gap:12px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+.sbn{flex:none;font-size:20px;font-weight:800;color:var(--accent)}
+.sb b{display:block}.sb span{display:block;font-size:15px;color:var(--muted)}.sb em{font-style:normal;color:var(--ink);font-weight:700}
+.stores{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;margin:12px 0}
+.store{display:flex;gap:16px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px}
+.store b{display:block}.store span{display:block;color:var(--muted);font-size:14px;margin-bottom:6px}
+.sqr{flex:none;background:#fff;padding:8px;border-radius:8px;line-height:0}
+.qr{display:flex;flex-wrap:wrap;gap:20px;align-items:center;margin:14px 0;padding:16px;background:var(--surface);border:1px solid var(--line);border-radius:12px}
+.qr #qr{background:#fff;padding:10px;border-radius:8px;line-height:0}
+.qr div:last-child{flex:1;min-width:220px}
+.home{display:inline-block;margin-top:24px;font-size:14px;color:var(--muted)}
+
+footer{grid-column:1/-1;margin-top:56px;padding-top:20px;border-top:1px solid var(--line);font-size:14px;color:var(--muted);display:grid;gap:4px}
+footer b{color:var(--ink)}
+
+dialog{border:0;padding:0;background:transparent;max-width:96vw;max-height:94vh}
+dialog::backdrop{background:rgba(10,14,13,.82)}
+dialog img{display:block;max-width:96vw;max-height:88vh;width:auto;height:auto;border-radius:8px;background:#fff}
+dialog p{color:#fff;text-align:center;margin:8px auto 0;font-size:15px}
+dialog button{position:fixed;top:calc(12px + env(safe-area-inset-top,0px));right:calc(12px + env(safe-area-inset-right,0px));font:inherit;font-weight:700;padding:8px 14px;border-radius:8px;border:0;background:#fff;color:#111;cursor:pointer}
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--paper);padding:10px 18px;border-radius:999px;font-size:15px;opacity:0;pointer-events:none;transition:opacity .2s}
+.toast.on{opacity:1}
+@media (prefers-reduced-motion:reduce){.toast{transition:none}html{scroll-behavior:auto}}
+html{scroll-behavior:smooth}
+</style>
+</head>
+<body>
+
+
+<div class="wrap">
+<header class="hero">
+  <div>
+    <div class="eyebrow">FlowDX · 휴대폰 하나로 따라 하는 실습</div>
+    <h1>모바일로 진행하는<br><em>AI 연수</em></h1>
+    <p>휴대폰 하나로 따라 하는 AI 실습 교안이에요. 화면 사진을 누르면 크게 볼 수 있고, 지침과 프롬프트는 버튼 한 번으로 복사돼요.</p>
+    <div class="days">
+      <a href="#m-1"><b>기본 셋팅</b>구글 계정 · 크롬 · 렌즈 · 카톡</a>
+      <a href="#m-5"><b>AI 실습</b>ChatGPT · 내 캐릭터 · 동영상</a>
+    </div>
+  </div>
+</header>
+
+<nav class="toc" aria-label="차례">
+  <h2>차례</h2>
+  <ol>
+    <li><a href="#m-1">1. 구글 계정 확인</a></li>
+    <li><a href="#m-2">2. 크롬 확인</a></li>
+    <li><a href="#m-3">3. 구글 렌즈</a></li>
+    <li><a href="#m-4">4. 카톡 폴더 · 팀채팅</a></li>
+    <li><a href="#m-5">5. ChatGPT 가입과 설정</a></li>
+    <li><a href="#m-6">6. 내 캐릭터 만들기</a></li>
+    <li><a href="#m-7">7. 구글 플로우 동영상</a></li>
+    <li><a href="#m-8">8. 브레이브 설치</a></li>
+  </ol>
+  <p class="ver">강사 FlowDX 이애진<br>ai@flowdx.kr</p>
+</nav>
+
+<main>
+<details class="mtoc"><summary>차례 보기</summary>
+  <p style="margin:8px 0;font-size:15px"><a href="#m-1">구글 계정 확인</a> · <a href="#m-2">크롬 확인</a> · <a href="#m-3">구글 렌즈</a> · <a href="#m-4">카톡 폴더 · 팀채팅</a> · <a href="#m-5">ChatGPT 가입과 설정</a> · <a href="#m-6">내 캐릭터 만들기</a> · <a href="#m-7">구글 플로우 동영상</a> · <a href="#m-8">브레이브 설치</a></p>
+</details>
+
+<section class="mod" id="m-1">
+  <header><div class="num">1</div><h2 class="t">구글 계정 확인<small>갤럭시·아이폰에서 내 지메일 찾기</small></h2></header>
+  <div class="route"><span class="who">갤럭시·아이폰</span><ol><li>Google 앱</li><li>오른쪽 위 동그라미</li><li>내 이름과 지메일 확인</li></ol><p class="tip">갤럭시와 아이폰 모두 같은 방법이에요.</p></div>
+  <details class="toggle"><summary>Google 앱이 없나요? 설치 QR·링크 (아이폰은 없는 경우가 많아요)</summary>
+    <p class="lead">내 휴대폰에 맞는 QR을 카메라로 비추거나, 휴대폰에서 버튼을 눌러 설치해요. 설치 후 내 지메일로 로그인해요.</p>
+    <div class="stores">
+      <div class="store"><div class="sqr" data-qr="https://apps.apple.com/app/google/id284815942" aria-label="아이폰용 Google 앱 QR"></div><div><b>아이폰</b><span>App Store</span><a class="btn" href="https://apps.apple.com/app/google/id284815942" target="_blank" rel="noopener">Google 앱 받기</a></div></div>
+      <div class="store"><div class="sqr" data-qr="https://play.google.com/store/apps/details?id=com.google.android.googlequicksearchbox" aria-label="안드로이드용 Google 앱 QR"></div><div><b>안드로이드 (갤럭시)</b><span>Play 스토어</span><a class="btn" href="https://play.google.com/store/apps/details?id=com.google.android.googlequicksearchbox" target="_blank" rel="noopener">Google 앱 받기</a></div></div>
+    </div>
+  </details>
+  <div class="shots">
+    <figure><button type="button" aria-label="크게 보기: ① Google 앱 열기"><img src="img/g1.webp" alt="① Google 앱 열기" loading="lazy"></button><figcaption>① Google 앱 열기</figcaption></figure>
+    <figure><button type="button" aria-label="크게 보기: ② 오른쪽 위 동그라미"><img src="img/g2.webp" alt="② 오른쪽 위 동그라미" loading="lazy"></button><figcaption>② 오른쪽 위 동그라미</figcaption></figure>
+    <figure><button type="button" aria-label="크게 보기: ③ 내 이름과 지메일 확인"><img src="img/g3.webp" alt="③ 내 이름과 지메일 확인" loading="lazy"></button><figcaption>③ 내 이름과 지메일 확인</figcaption></figure>
+  </div>
+  <div class="note"><b>꼭</b>비밀번호를 모르면 지금 바꿔 두세요. 오늘은 모두 이 계정으로 해요.</div>
+  <h3>비밀번호 바꾸기</h3>
+  <div class="route"><ol><li>오른쪽 위 동그라미</li><li>Google 계정 관리</li><li>Google 비밀번호</li><li>새 비밀번호 입력</li></ol><p class="tip">8자 이상, 다른 사이트에서 쓰지 않는 비밀번호로 정해요. 사진을 누르면 크게 보여요.</p></div>
+  <div class="shots">
+    <figure><button type="button" aria-label="크게 보기: ④ Google 계정 관리"><img src="img/g4.webp" alt="④ Google 계정 관리" loading="lazy"></button><figcaption>④ Google 계정 관리</figcaption></figure>
+    <figure><button type="button" aria-label="크게 보기: ⑤ Google 비밀번호"><img src="img/g5.webp" alt="⑤ Google 비밀번호" loading="lazy"></button><figcaption>⑤ Google 비밀번호</figcaption></figure>
+    <figure><button type="button" aria-label="크게 보기: ⑥ 새 비밀번호 입력"><img src="img/g6.webp" alt="⑥ 새 비밀번호 입력" loading="lazy"></button><figcaption>⑥ 새 비밀번호 입력</figcaption></figure>
+  </div>
+</section>
+
+<section class="mod" id="m-2">
+  <header><div class="num">2</div><h2 class="t">크롬 확인<small>설치하고 기본 브라우저로</small></h2></header>
+  <div class="route"><span class="who">설치</span><ol><li>Play 스토어 · App Store</li><li>크롬 검색</li><li>설치</li></ol></div>
+  <p class="lead">검색이 어려우면 내 휴대폰에 맞는 QR을 카메라로 비추거나, 휴대폰에서 버튼을 눌러요.</p>
+  <div class="stores">
+    <div class="store"><div class="sqr" data-qr="https://play.google.com/store/apps/details?id=com.android.chrome" aria-label="안드로이드용 크롬 QR"></div><div><b>안드로이드 (갤럭시)</b><span>Play 스토어</span><a class="btn" href="https://play.google.com/store/apps/details?id=com.android.chrome" target="_blank" rel="noopener">크롬 받기</a></div></div>
+    <div class="store"><div class="sqr" data-qr="https://apps.apple.com/app/google-chrome/id535886823" aria-label="아이폰용 크롬 QR"></div><div><b>아이폰</b><span>App Store</span><a class="btn" href="https://apps.apple.com/app/google-chrome/id535886823" target="_blank" rel="noopener">크롬 받기</a></div></div>
+  </div>
+  <div class="route"><span class="who">갤럭시 기본으로</span><ol><li>설정</li><li>애플리케이션</li><li>기본 앱 선택</li><li>브라우저 앱</li><li>Chrome</li></ol><p class="tip">메뉴가 안 보이면 설정 돋보기에서 기본 앱을 검색해요.</p></div>
+  <div class="route"><span class="who">아이폰 기본으로</span><ol><li>설정</li><li>Chrome</li><li>기본 브라우저 앱</li><li>Chrome</li></ol></div>
+</section>
+
+<section class="mod" id="m-3">
+  <header><div class="num">3</div><h2 class="t">구글 렌즈<small>카메라로 찍어서 검색</small></h2></header>
+  <div class="route"><span class="who">갤럭시·아이폰</span><ol><li>Google 앱</li><li>검색창 오른쪽 카메라 버튼</li><li>카메라 열기 또는 사진 중 하나 고르기</li></ol><p class="tip">갤럭시와 아이폰 모두 Google 앱에서 똑같이 해요. 앱이 없으면 <a href="#m-1">1번 구글 계정 확인</a>의 설치 QR로 먼저 받아요.</p></div>
+  <div class="shots">
+    <figure><button type="button" aria-label="크게 보기: ① Google 앱 누르기"><img src="img/l1.webp" alt="① Google 앱 누르기" loading="lazy"></button><figcaption>① Google 앱 누르기</figcaption></figure>
+    <figure><button type="button" aria-label="크게 보기: ② 검색창 오른쪽 카메라 버튼"><img src="img/l2.webp" alt="② 검색창 오른쪽 카메라 버튼" loading="lazy"></button><figcaption>② 검색창 오른쪽 카메라 버튼</figcaption></figure>
+    <figure><button type="button" aria-label="크게 보기: ③ 카메라 열기 OR ④ 사진: 둘 중 하나 고르기"><img src="img/l3.webp" alt="③ 카메라 열기 OR ④ 사진: 둘 중 하나 고르기" loading="lazy"></button><figcaption>③ 카메라 열기 OR ④ 사진: 둘 중 하나 고르기</figcaption></figure>
+  </div>
+  <p class="lead">③ <b>카메라 열기</b>를 누르면 내 눈앞에 있는 것을 비춰서 찾고, ④ 파란 <b>사진</b>을 누르면 갤러리에서 이미 찍어 둔 사진을 골라서 찾아요. 둘 중 하나만 고르면 돼요.</p>
+  <h3>④ 사진을 고른 경우: 갤러리 사진으로 찾기</h3>
+  <p>파란 <b>사진</b>을 누르고, 아래에 보이는 내 갤러리 사진 중 하나를 골라요.</p>
+  <p>갤러리 사진을 넣으면 어디인지, 무엇인지 여러 정보가 나와요. 더 궁금한 건 "이 이미지에 관해 질문하기"에 이어서 물어봐요.</p>
+  <div class="shots three">
+    <figure><button type="button" aria-label="크게 보기: ④ 사진 누르기 → ⑤ 사진 하나 고르기"><img src="img/l3b.webp" alt="④ 사진 누르기 → ⑤ 사진 하나 고르기" loading="lazy"></button><figcaption>④ 사진 누르기 → ⑤ 사진 하나 고르기</figcaption></figure>
+    <figure><button type="button" aria-label="크게 보기: ⑥ 이 이미지에 관해 질문하기"><img src="img/l4.webp" alt="⑥ 이 이미지에 관해 질문하기" loading="lazy"></button><figcaption>⑥ 이 이미지에 관해 질문하기</figcaption></figure>
+    <figure><button type="button" aria-label="크게 보기: ⑦ AI 개요: 어디인지 알려 줘요"><img src="img/l5.webp" alt="⑦ AI 개요: 어디인지 알려 줘요" loading="lazy"></button><figcaption>⑦ AI 개요: 어디인지 알려 줘요</figcaption></figure>
+  </div>
+  <h3>③ 카메라 열기를 고른 경우: 눈앞의 것 비추기</h3>
+  <p><b>카메라 열기</b>를 누르고 영어책, 안내문, 물건을 비춰요. 아래에서 하고 싶은 것을 골라요.</p>
+  <div class="grid2">
+    <div class="card"><b>⑧ 번역</b><span>비춘 글자를 한국어로 바꿔 화면 위에 바로 보여 줘요.</span></div>
+    <div class="card"><b>⑨ 말하기</b><span>비춘 것을 보면서 말로 묻고 말로 듣는 실시간 대화를 해요.</span></div>
+  </div>
+  <div class="shots">
+    <figure><button type="button" aria-label="크게 보기: ③ 카메라 열기 누르기"><img src="img/l3c.webp" alt="③ 카메라 열기 누르기" loading="lazy"></button><figcaption>③ 카메라 열기 누르기</figcaption></figure>
+    <figure><button type="button" aria-label="크게 보기: ⑧ 번역 · ⑨ 말하기"><img src="img/l6.webp" alt="⑧ 번역 · ⑨ 말하기" loading="lazy"></button><figcaption>⑧ 번역 · ⑨ 말하기</figcaption></figure>
+    <figure><button type="button" aria-label="크게 보기: ⑩ 실시간 대화: 말로 묻고 듣기"><img src="img/l7.webp" alt="⑩ 실시간 대화: 말로 묻고 듣기" loading="lazy"></button><figcaption>⑩ 실시간 대화: 말로 묻고 듣기</figcaption></figure>
+  </div>
+  <div class="note"><b>꼭</b>검색 Live는 사람이 아니에요. AI도 실수할 수 있으니 중요한 내용은 다시 확인해요.</div>
+  <h3>영상으로 보기</h3>
+  <p class="lead">Google 앱에서 카메라를 열고 영어책을 비춘 뒤, 말하기로 실시간 대화하고 번역까지 해 보는 모습이에요. 누르는 곳은 빨간 네모로 표시했어요. (26초, 묻고 답하는 목소리만 들어 있어요)</p>
+  <div class="video"><video controls playsinline preload="metadata" poster="media/lens-live.jpg"><source src="media/lens-live.mp4" type="video/mp4">이 브라우저에서는 영상을 재생할 수 없어요.</video></div>
+  <h3>렌즈 앱으로 바로 쓰기 (갤럭시)</h3>
+  <p>갤럭시는 Google 앱을 거치지 않고 <b>렌즈</b> 앱을 바로 눌러도 돼요. 크롬, 홈 화면 검색창 등 카메라 모양이 보이는 곳이면 어디서나 렌즈를 쓸 수 있어요. 아이폰은 Google 앱에서만 돼요.</p>
+  <div class="shots three">
+    <figure><button type="button" aria-label="크게 보기: ① 렌즈 앱 누르기"><img src="img/z1.webp" alt="① 렌즈 앱 누르기" loading="lazy"></button><figcaption>① 렌즈 앱 누르기</figcaption></figure>
+    <figure><button type="button" aria-label="크게 보기: ② 번역 고르고 ③ 번역 버튼 누르기"><img src="img/z2.webp" alt="② 번역 고르고 ③ 번역 버튼 누르기" loading="lazy"></button><figcaption>② 번역 고르고 ③ 번역 버튼 누르기</figcaption></figure>
+    <figure><button type="button" aria-label="크게 보기: ④ 글자가 한국어로 바뀌어요 · ⑤ 듣기"><img src="img/z3.webp" alt="④ 글자가 한국어로 바뀌어요 · ⑤ 듣기" loading="lazy"></button><figcaption>④ 글자가 한국어로 바뀌어요 · ⑤ 듣기</figcaption></figure>
+  </div>
+  <p class="lead">일본어 글자를 비추면 그 자리에 한국어로 바꿔 보여 주고, ⑤ 듣기를 누르면 소리로도 들려줘요.</p>
+  <div class="grid2">
+    <div class="card"><b>꽃 이름</b><span>꽃·나무 찍기</span></div>
+    <div class="card"><b>작은 글씨</b><span>약 봉투 찍고 텍스트</span></div>
+    <div class="card"><b>번역</b><span>영어 안내문 찍고 번역</span></div>
+    <div class="card"><b>물건 찾기</b><span>가방·그릇 찍기</span></div>
+  </div>
+</section>
+
+<section class="mod" id="m-4">
+  <header><div class="num">4</div><h2 class="t">카톡 폴더 · 팀채팅<small>채팅방 폴더 만들고 팀채팅방</small></h2></header>
+  <h3><span class="s">1</span>먼저 업데이트</h3>
+  <div class="route"><ol><li>Play 스토어 · App Store</li><li>카카오톡 검색</li><li>업데이트</li></ol></div>
+  <p class="lead">2026년 9월 15일 업데이트부터 생긴 기능이에요. 열기만 보이면 이미 최신이에요.</p>
+  <section class="kk" aria-label="업데이트 버튼이 안 보일 때">
+    <div class="kk-head"><span class="kk-q">?</span><b>업데이트 버튼이 아예 안 보인다면?</b></div>
+    <div class="kk-steps">
+      <div class="kk-step">
+        <div class="kk-t"><span class="kk-n">1</span>앱스토어에서 직접 검색</div>
+        <div class="kk-phone" aria-hidden="true">
+          <div class="kk-bar"><span class="kk-mag"></span>카카오톡<span class="kk-x">×</span></div>
+          <div class="kk-app"><span class="kk-icon">톡</span><span class="kk-name">카카오톡<small>Kakao Corp.</small></span><span class="kk-btn">업데이트</span></div>
+        </div>
+        <p>앱스토어에서 '카카오톡'을 직접 검색해 업데이트 버튼이 있는지 확인해요.</p>
+      </div>
+      <div class="kk-step">
+        <div class="kk-t"><span class="kk-n">2</span>앱스토어를 다시 실행</div>
+        <div class="kk-phone dark" aria-hidden="true">
+          <div class="kk-card">Play 스토어<br><small>App Store</small></div>
+          <div class="kk-pill">모두 종료</div>
+        </div>
+        <p>앱스토어를 완전히 종료했다가 다시 열면 화면이 새로 바뀌면서 업데이트 버튼이 보일 수 있어요.</p>
+      </div>
+      <div class="kk-step">
+        <div class="kk-t"><span class="kk-n">3</span>휴대폰을 다시 켜고 확인</div>
+        <div class="kk-phone dark" aria-hidden="true">
+          <div class="kk-pw"><span class="kk-dot">⏻</span>전원 끄기</div>
+          <div class="kk-pw on"><span class="kk-dot">↻</span>다시 시작</div>
+        </div>
+        <p>휴대폰을 한 번 다시 시작한 뒤, 앱스토어에서 카카오톡을 다시 검색해 봐요.</p>
+      </div>
+    </div>
+    <div class="kk-more">
+      <b>그래도 안 보이면</b>
+      <ul>
+        <li>업데이트는 모든 사람에게 같은 날 나오지 않아요. 며칠 뒤 다시 확인해요.</li>
+        <li>휴대폰 운영체제가 너무 오래되지 않았는지 확인해요.</li>
+        <li>저장공간이 넉넉한지 확인해요.</li>
+        <li>와이파이와 모바일 데이터를 바꿔서 다시 해 봐요.</li>
+      </ul>
+    </div>
+  </section>
+
+  <h3><span class="s">2</span>채팅방 폴더 만들기</h3>
+  <div class="route"><ol><li>채팅 탭 ≡+</li><li>폴더 만들기</li><li>이름·아이콘</li><li>채팅방 추가</li><li>완료</li></ol></div>
+  <div class="shots">
+    <figure><button type="button" aria-label="크게 보기: ① 채팅 탭 위 ≡+"><img src="img/img03.webp" alt="① 채팅 탭 위 ≡+" loading="lazy"></button><figcaption>① 채팅 탭 위 ≡+</figcaption></figure>
+    <figure><button type="button" aria-label="크게 보기: ② 폴더 만들기"><img src="img/img04.webp" alt="② 폴더 만들기" loading="lazy"></button><figcaption>② 폴더 만들기</figcaption></figure>
+    <figure><button type="button" aria-label="크게 보기: ③ 아이콘 고르기"><img src="img/img05.webp" alt="③ 아이콘 고르기" loading="lazy"></button><figcaption>③ 아이콘 고르기</figcaption></figure>
+    <figure><button type="button" aria-label="크게 보기: ④ 이름 적고 완료"><img src="img/img06.webp" alt="④ 이름 적고 완료" loading="lazy"></button><figcaption>④ 이름 적고 완료</figcaption></figure>
+    <figure><button type="button" aria-label="크게 보기: ⑤ 채팅방 추가"><img src="img/img07.webp" alt="⑤ 채팅방 추가" loading="lazy"></button><figcaption>⑤ 채팅방 추가</figcaption></figure>
+    <figure><button type="button" aria-label="크게 보기: ⑥ 새 폴더 확인"><img src="img/img08.webp" alt="⑥ 새 폴더 확인" loading="lazy"></button><figcaption>⑥ 새 폴더 확인</figcaption></figure>
+    <figure><button type="button" aria-label="크게 보기: ⑦ 탭으로 모아 보기"><img src="img/img09.webp" alt="⑦ 탭으로 모아 보기" loading="lazy"></button><figcaption>⑦ 탭으로 모아 보기</figcaption></figure>
+    <figure><button type="button" aria-label="크게 보기: 고치기·지우기: 왼쪽으로 밀기"><img src="img/img10.webp" alt="고치기·지우기: 왼쪽으로 밀기" loading="lazy"></button><figcaption>고치기·지우기: 왼쪽으로 밀기</figcaption></figure>
+  </div>
+  <details class="faq"><summary>폴더는 몇 개까지 만들어요?</summary><p>폴더 10개, 폴더 하나에 채팅방 100개까지예요. 한 방을 여러 폴더에 넣어도 돼요.</p></details>
+  <details class="faq"><summary>원래 채팅 목록은요?</summary><p>그대로 있어요. 폴더는 탭으로 따로 생겨요.</p></details>
+  <details class="faq"><summary>폴더별로 알림을 끌 수 있나요?</summary><p>네. 폴더 단위로 한꺼번에 켜고 끌 수 있어요.</p></details>
+  <details class="faq"><summary>채널 폴더는 뭐예요?</summary><p>알림톡, 혜택 메시지가 저절로 모이는 곳이에요. 내가 만드는 폴더와 달라요.</p></details>
+  <details class="faq"><summary>폴더를 지우면 채팅방도 지워지나요?</summary><p>아니요. 채팅방은 그대로 남아요.</p></details>
+
+  <h3><span class="s">3</span>팀채팅방 만들기</h3>
+  <div class="route"><span class="who">만들기</span><ol><li>채팅 탭 말풍선+</li><li>팀채팅</li><li>사람 고르기</li><li>사진·이름</li><li>초대 권한</li><li>확인</li></ol><p class="tip">방 이름 옆에 깃발이 붙어요. 방장이 초대 권한을 정하고 멤버를 내보낼 수 있어요.</p></div>
+  <div class="route"><span class="who">내보내기</span><ol><li>팀채팅방 ☰</li><li>톱니바퀴</li><li>팀 설정</li><li>멤버 관리</li><li>내보내기</li></ol></div>
+</section>
+
+<section class="mod" id="m-5">
+  <header><div class="num">5</div><h2 class="t">ChatGPT 가입과 설정<small>가입, 학습 끄기, 맞춤형 지침</small></h2></header>
+  <div class="route"><span class="who">설치</span><ol><li>Play 스토어 · App Store</li><li>ChatGPT 검색</li><li>만든 곳 OpenAI 확인</li><li>설치</li></ol></div>
+  <div class="stores">
+    <div class="store"><div class="sqr" data-qr="https://play.google.com/store/apps/details?id=com.openai.chatgpt" aria-label="안드로이드용 ChatGPT QR"></div><div><b>안드로이드 (갤럭시)</b><span>Play 스토어</span><a class="btn" href="https://play.google.com/store/apps/details?id=com.openai.chatgpt" target="_blank" rel="noopener">ChatGPT 받기</a></div></div>
+    <div class="store"><div class="sqr" data-qr="https://apps.apple.com/app/chatgpt/id6448311069" aria-label="아이폰용 ChatGPT QR"></div><div><b>아이폰</b><span>App Store</span><a class="btn" href="https://apps.apple.com/app/chatgpt/id6448311069" target="_blank" rel="noopener">ChatGPT 받기</a></div></div>
+  </div>
+  <div class="route"><span class="who">가입</span><ol><li>앱 열기</li><li>Google로 계속하기</li><li>내 계정</li></ol><p class="tip">결제 안내가 나오면 닫아요. 오늘은 무료로 해요.</p></div>
+
+  <h3><span class="s">1</span>데이터 학습 끄기</h3>
+  <div class="route"><ol><li>왼쪽 위 ☰</li><li>아래 사람 모양</li><li>기록 및 데이터</li><li>모두를 위한 모델 개선 끄기</li></ol></div>
+  <div class="shots">
+    <figure><button type="button" aria-label="크게 보기: ① 왼쪽 위 ☰"><img src="img/q1.webp" alt="① 왼쪽 위 ☰" loading="lazy"></button><figcaption>① 왼쪽 위 ☰</figcaption></figure>
+    <figure><button type="button" aria-label="크게 보기: ② 아래 사람 모양"><img src="img/q2.webp" alt="② 아래 사람 모양" loading="lazy"></button><figcaption>② 아래 사람 모양</figcaption></figure>
+    <figure><button type="button" aria-label="크게 보기: ③ 아래로 내려 기록 및 데이터"><img src="img/q3.webp" alt="③ 아래로 내려 기록 및 데이터" loading="lazy"></button><figcaption>③ 아래로 내려 기록 및 데이터</figcaption></figure>
+    <figure><button type="button" aria-label="크게 보기: ④ 모두를 위한 모델 개선 끄기"><img src="img/q4.webp" alt="④ 모두를 위한 모델 개선 끄기" loading="lazy"></button><figcaption>④ 모두를 위한 모델 개선 끄기</figcaption></figure>
+  </div>
+  <details class="toggle"><summary>화면이 다르게 보여요 (예전 화면·아이폰 예시)</summary>
+    <p class="lead">앱 버전에 따라 ☰ → 톱니바퀴 → 데이터 제어 → "모델 개선을 위한 데이터 학습 허용" 끄기로 보일 수 있어요.</p>
+    <div class="shots five">
+      <figure><button type="button" aria-label="크게 보기: ① 왼쪽 위 ☰"><img src="img/c1.webp" alt="① 왼쪽 위 ☰" loading="lazy"></button><figcaption>① 왼쪽 위 ☰</figcaption></figure>
+      <figure><button type="button" aria-label="크게 보기: ② 아래 톱니바퀴"><img src="img/c2.webp" alt="② 아래 톱니바퀴" loading="lazy"></button><figcaption>② 아래 톱니바퀴</figcaption></figure>
+      <figure><button type="button" aria-label="크게 보기: ③ 설정 화면"><img src="img/c3.webp" alt="③ 설정 화면" loading="lazy"></button><figcaption>③ 설정 화면</figcaption></figure>
+      <figure><button type="button" aria-label="크게 보기: ④ 데이터 제어"><img src="img/c4.webp" alt="④ 데이터 제어" loading="lazy"></button><figcaption>④ 데이터 제어</figcaption></figure>
+      <figure><button type="button" aria-label="크게 보기: ⑤ 데이터 학습 허용 끄기"><img src="img/c5.webp" alt="⑤ 데이터 학습 허용 끄기" loading="lazy"></button><figcaption>⑤ 데이터 학습 허용 끄기</figcaption></figure>
+    </div>
+  </details>
+
+  <h3><span class="s">2</span>맞춤형 지침 넣기</h3>
+  <div class="route"><ol><li>왼쪽 위 ☰</li><li>아래 사람 모양</li><li>개인 맞춤 설정</li><li>사용자 지정 지침에 붙여 넣기</li><li>오른쪽 위 ✓ 저장</li></ol><p class="tip">예전 화면은 ☰ → 톱니바퀴 → 개인 맞춤 설정 → 맞춤형 지침이에요.</p></div>
+  <div class="shots">
+    <figure><button type="button" aria-label="크게 보기: ① 왼쪽 위 ☰"><img src="img/q1.webp" alt="① 왼쪽 위 ☰" loading="lazy"></button><figcaption>① 왼쪽 위 ☰</figcaption></figure>
+    <figure><button type="button" aria-label="크게 보기: ② 아래 사람 모양"><img src="img/q2.webp" alt="② 아래 사람 모양" loading="lazy"></button><figcaption>② 아래 사람 모양</figcaption></figure>
+    <figure><button type="button" aria-label="크게 보기: ③ 개인 맞춤 설정"><img src="img/m2.webp" alt="③ 개인 맞춤 설정" loading="lazy"></button><figcaption>③ 개인 맞춤 설정</figcaption></figure>
+    <figure><button type="button" aria-label="크게 보기: ④ 사용자 지정 지침에 붙여 넣기 · ⑤ ✓ 저장"><img src="img/m3.webp" alt="④ 사용자 지정 지침에 붙여 넣기 · ⑤ ✓ 저장" loading="lazy"></button><figcaption>④ 사용자 지정 지침에 붙여 넣기 · ⑤ ✓ 저장</figcaption></figure>
+  </div>
+  <p class="lead">10가지 약속을 한 번 넣어 두면, 새 채팅을 열 때마다 ChatGPT가 이 약속대로 답해요.</p>
+  <div class="rules">
+    <div class="rule"><span class="rn">1</span><div><b>말투</b><span>쉬운 존댓말, 짧은 문장</span><small>어르신도 편하게 읽어요</small></div></div>
+    <div class="rule"><span class="rn">2</span><div><b>답하는 순서</b><span>결론 먼저, 번호로, 한 화면</span><small>휴대폰에서 길게 안 늘어져요</small></div></div>
+    <div class="rule"><span class="rn">3</span><div><b>의도 파악</b><span>짧게 물어도 알아듣기</span><small>되묻기는 꼭 필요할 때 1번만</small></div></div>
+    <div class="rule"><span class="rn">4</span><div><b>지어내지 않기</b><span>모르면 "모르겠어요"</span><small>할루시네이션(그럴듯한 거짓말)을 막아요</small></div></div>
+    <div class="rule"><span class="rn">5</span><div><b>한 번 더 확인</b><span>날짜·요일·숫자·이름 점검</span><small>틀린 전제도 바로잡아 줘요</small></div></div>
+    <div class="rule"><span class="rn">6</span><div><b>최신 정보</b><span>바뀌는 정보는 검색해서 확인</span><small>옛날 정보로 답하지 않게 해요</small></div></div>
+    <div class="rule"><span class="rn">7</span><div><b>내 자료 먼저</b><span>올린 사진·문서를 근거로</span><small>자료에 없는 말을 덧붙이지 않아요</small></div></div>
+    <div class="rule"><span class="rn">8</span><div><b>전문 분야 주의</b><span>건강·약·돈·법은 전문가 확인</span><small>AI 말만 믿고 결정하지 않게 해요</small></div></div>
+    <div class="rule"><span class="rn">9</span><div><b>바로 쓰는 결과물</b><span>복사해서 바로 보내는 글</span><small>고를 게 많으면 하나를 추천해요</small></div></div>
+    <div class="rule"><span class="rn">10</span><div><b>개인정보·사기 주의</b><span>민감한 번호는 안 묻고 안 적기</span><small>의심 문자는 사기일 수 있다고 알려 줘요</small></div></div>
+  </div>
+  <div class="copy"><div class="bar"><span><b>맞춤형 지침 10가지 (번호까지 그대로 붙여 넣어요)</b> · 806자</span><button class="btn" type="button" data-copy="blk-common">맞춤형 지침 복사</button></div><pre id="blk-common">1. [말투] 모든 답변은 한국어 존댓말(&quot;~요&quot;)로, 쉬운 말과 짧은 문장으로 쓴다. 어려운 용어와 영어는 쉬운 우리말로 풀어 쓴다.
+2. [답하는 순서] 결론부터 말한다. 순서가 있으면 1, 2, 3 번호로 쓴다. 휴대폰 한 화면에 들어가게 짧게 쓰고, 더 필요하면 &quot;더 알려 드릴까요?&quot;라고 묻는다.
+3. [의도 파악] 말이 짧거나 맞춤법이 틀려도 뜻이 분명하면 알아서 보완해 바로 답한다. 답이 크게 달라질 때만 먼저 질문 1개를 한다.
+4. [지어내지 않기] 모르면 &quot;모르겠어요&quot;, 확실하지 않으면 &quot;확실하지 않아요&quot;라고 말한다. 없는 사실·숫자·출처·기능을 지어내지 않는다.
+5. [한 번 더 확인] 날짜와 요일, 숫자, 이름을 다시 확인한다. 내 말에 틀린 전제가 있으면 그대로 따르지 말고 바로잡아 준다.
+6. [최신 정보] 가격, 일정, 법, 제도, 제품처럼 바뀌는 정보는 최신 공식 자료를 검색해 확인하고, 확인하지 못하면 그렇다고 말한다.
+7. [내 자료 먼저] 내가 준 사진·문서·파일을 먼저 꼼꼼히 보고 답하며, 거기에 없는 내용을 있는 것처럼 말하지 않는다.
+8. [전문 분야 주의] 건강·약·돈·법률 문제는 일반 정보만 알려 주고, 의사·약사·전문가에게 꼭 확인하라고 권한다.
+9. [바로 쓰는 결과물] 문자나 글을 부탁하면 바로 복사해 보낼 수 있는 완성된 글로 쓴다. 선택지가 여럿이면 가장 알맞은 것 하나를 이유와 함께 추천한다.
+10. [개인정보·사기 주의] 주민등록번호·계좌번호·비밀번호 같은 개인정보는 묻지도 적지도 않는다. 돈을 보내라거나 링크를 누르라는 문자가 의심되면 사기일 수 있다고 알려 준다.</pre></div>
+
+  <h3><span class="s">3</span>말로 하기</h3>
+  <div class="grid2">
+    <div class="card"><b>마이크</b><span>말하면 글자로 받아 적기</span></div>
+    <div class="card"><b>둥근 소리 버튼</b><span>말로 묻고 말로 듣기</span></div>
+  </div>
+  <div class="shots">
+    <figure><button type="button" aria-label="크게 보기: ① 마이크 · ② 둥근 소리 버튼"><img src="img/v1.webp" alt="① 마이크 · ② 둥근 소리 버튼" loading="lazy"></button><figcaption>① 마이크 · ② 둥근 소리 버튼</figcaption></figure>
+    <figure><button type="button" aria-label="크게 보기: ① 마이크로 말하면 ③ 글자로 적히고 ④ 답은 글로 와요"><img src="img/v2.webp" alt="① 마이크로 말하면 ③ 글자로 적히고 ④ 답은 글로 와요" loading="lazy"></button><figcaption>① 마이크로 말하면 ③ 글자로 적히고 ④ 답은 글로 와요</figcaption></figure>
+    <figure><button type="button" aria-label="크게 보기: ② 파란 소리 버튼: ⑤ 말로 주고받기 · ⑥ 끝내기"><img src="img/v3.webp" alt="② 파란 소리 버튼: ⑤ 말로 주고받기 · ⑥ 끝내기" loading="lazy"></button><figcaption>② 파란 소리 버튼: ⑤ 말로 주고받기 · ⑥ 끝내기</figcaption></figure>
+    <figure><button type="button" aria-label="크게 보기: ⑦ 자막(CC)을 켜면 대화가 글자로도 보여요"><img src="img/v4.webp" alt="⑦ 자막(CC)을 켜면 대화가 글자로도 보여요" loading="lazy"></button><figcaption>⑦ 자막(CC)을 켜면 대화가 글자로도 보여요</figcaption></figure>
+  </div>
+  <p class="lead">① 마이크는 내 말을 글자로 받아 적어 주고, 답은 글로 와요.<br>② 파란 둥근 소리 버튼을 누르면 전화하듯 서로 말로 주고받아요. 평소에는 글자 없이 목소리로만 대화하고, ⑦ 자막(CC)을 켜면 주고받는 말이 화면에 글자로도 함께 보여요. 귀가 잘 안 들리거나 시끄러운 곳에서 쓰기 좋아요. 다 끝나면 ⑥ X를 눌러요. X를 누르면 지금까지 나눈 대화 전체가 글로 남아 있어서 다시 볼 수 있어요.</p>
+  <p class="lead">이렇게 말해 보세요. 누르면 복사돼요.</p>
+  <div class="chips">
+    <button class="chip" type="button">무릎 안 아프게 하는 쉬운 스트레칭 알려 줘</button>
+    <button class="chip" type="button">손주 생일 축하 문자 따뜻하게 써 줘</button>
+  </div>
+</section>
+
+<section class="mod" id="m-6">
+  <header><div class="num">6</div><h2 class="t">내 캐릭터 만들기<small>캐릭터 → 이모티콘 9개 → 썸네일</small></h2></header>
+  <div class="cf">
+    <section class="cf-card">
+      <span class="cf-tag">오늘 만들 것</span>
+      <h4>사진 한 장에서 썸네일까지, 4단계</h4>
+      <div class="cf-steps">
+        <div class="cf-s prep"><small>준비</small><b>내 사진 + 한 줄 소개</b></div>
+        <div class="cf-s"><small>STEP 1</small><b>나를 소개하는 캐릭터</b></div>
+        <div class="cf-s"><small>STEP 2</small><b>이모티콘 9개</b></div>
+        <div class="cf-s"><small>STEP 3</small><b>크게 한 장 (썸네일)</b></div>
+      </div>
+      <p class="cf-note">완성한 그림은 우리 단톡방에 올려 함께 봐요.</p>
+    </section>
+    <section class="cf-card">
+      <span class="cf-tag">준비물</span>
+      <h4>두 가지만 있으면 돼요</h4>
+      <div class="cf-two">
+        <div><b>① 내 얼굴 사진 1장</b><span>밝은 곳에서 정면으로 찍은 사진. 지금 셀카를 찍어도 좋아요.</span></div>
+        <div><b>② 나를 소개하는 한 줄</b><span>예) 나는 커피를 좋아해 · 나는 여행을 좋아해 · 나는 꽃 가꾸기를 좋아해</span></div>
+      </div>
+      <p class="cf-tip">사진이 부담스러우면 글로 묘사해도 돼요. 예) "은발에 안경 쓴 60대, 등산복 차림"</p>
+    </section>
+    <section class="cf-card">
+      <span class="cf-tag">사진 찍기</span>
+      <h4>옆 사람과 서로 찍어 줘요</h4>
+      <ol class="cf-ol">
+        <li>내 폰 카메라 열기</li>
+        <li>옆 사람에게 폰 건네기</li>
+        <li>상반신으로, 최고의 모델처럼 찰칵!</li>
+      </ol>
+    </section>
+    <section class="cf-card">
+      <span class="cf-tag">STEP 1 · 캐릭터</span>
+      <h4>나를 소개하는 캐릭터</h4>
+      <ol class="cf-ol small">
+        <li>ChatGPT 입력창 [+]로 내 사진을 올리고, 아래 3줄을 넣어요.</li>
+        <li>1분쯤 기다리면 완성!</li>
+      </ol>
+      <div class="cf-chat" aria-hidden="true">
+        <div class="cf-photo"><span></span>내 사진</div>
+        <div class="cf-bubble"><b>내 소개:</b> <mark>나는 커피를 좋아하고 강아지와 산책하는걸 좋아해</mark><br><b>스타일:</b> 귀여운 3D 치비 스타일<br><b>캐릭터 이미지 제작:</b> 첨부된 이미지와 내 소개를 보고, 내 소개가 잘 표현된 전신 캐릭터</div>
+      </div>
+      <p class="cf-note">노란 부분만 나에 맞게 바꿔요.</p>
+    </section>
+  </div>
+  <h3><span class="s">1</span>전신 캐릭터</h3>
+  <p class="lead">내 사진을 함께 올리고 붙여 넣어요. "내 소개"는 나에 맞게 바꿔 써요. 예) 나는 커피를 좋아해 · 나는 여행을 좋아해</p>
+  <div class="pair tall"><div>
+  <div class="copy short"><div class="bar"><span><b>캐릭터 프롬프트</b> · 101자</span><button class="btn" type="button" data-copy="blk-char1">프롬프트 복사</button></div><pre id="blk-char1">내 소개: 나는 커피를 좋아하고 강아지와 산책하는걸 좋아해
+스타일: 귀여운 3D 치비 스타일
+캐릭터 이미지 제작: 첨부된 이미지와 내 소개를 보고, 내 소개가 잘 표현된 전신 캐릭터</pre></div>
+  </div>
+  <div class="shots one"><figure><button type="button" aria-label="크게 보기: 완성 예시: 이런 캐릭터를 만들어요"><img src="img/char_walk.webp" alt="완성 예시: 이런 캐릭터를 만들어요" loading="lazy"></button><figcaption>완성 예시: 이런 캐릭터를 만들어요</figcaption></figure></div></div>
+  <details class="toggle"><summary>결과 예시 보기 (STEP 1 캐릭터)</summary>
+    <div class="shots wide"><figure><button type="button" aria-label="크게 보기: STEP 1 결과: &quot;커피와 강아지 산책을 좋아해&quot; 캐릭터"><img src="img/r_char.webp" alt="STEP 1 결과: &quot;커피와 강아지 산책을 좋아해&quot; 캐릭터" loading="lazy"></button><figcaption>STEP 1 결과: &quot;커피와 강아지 산책을 좋아해&quot; 캐릭터</figcaption></figure></div>
+  </details>
+  <h3><span class="s">2</span>이모티콘 9개</h3>
+  <div class="pair"><div>
+  <div class="copy short"><div class="bar"><span><b>이모티콘 프롬프트</b> · 32자</span><button class="btn" type="button" data-copy="blk-char2">프롬프트 복사</button></div><pre id="blk-char2">위 이미지로 9개 이모티콘 제작, 귀여운 3D 치비 스타일</pre></div>
+  </div>
+  <div class="shots one"><figure><button type="button" aria-label="크게 보기: 완성 예시: 이모티콘 9개"><img src="img/emoji_final.webp" alt="완성 예시: 이모티콘 9개" loading="lazy"></button><figcaption>완성 예시: 이모티콘 9개</figcaption></figure></div></div>
+  <details class="toggle"><summary>결과 예시 보기 (STEP 2 이모티콘 9개)</summary>
+    <div class="shots wide"><figure><button type="button" aria-label="크게 보기: STEP 2 결과: 이모티콘 9개"><img src="img/r_emoji.webp" alt="STEP 2 결과: 이모티콘 9개" loading="lazy"></button><figcaption>STEP 2 결과: 이모티콘 9개</figcaption></figure></div>
+  </details>
+  
+  <h3><span class="s">3</span>한 장 크게 (썸네일)</h3>
+  <div class="route"><ol><li>이모티콘 9개 그림 저장</li><li>[+]로 그 그림 올리기</li><li>아래 프롬프트 붙여 넣기</li></ol><p class="tip">번호는 왼쪽 위부터 1, 2, 3, 다음 줄 4, 5, 6 순서예요. 마음에 드는 번호로 바꿔 써요.</p></div>
+  <div class="pair tall"><div>
+  <div class="copy short"><div class="bar"><span><b>썸네일 프롬프트</b> · 86자</span><button class="btn" type="button" data-copy="blk-char3">프롬프트 복사</button></div><pre id="blk-char3">첨부한 이모티콘 9개 중 4번으로 한 장만 크게 다시 그려 줘.
+얼굴과 옷은 지금과 똑같이 하고, 흰 배경, 전신, 세로 9:16, 그림 안에 글자 없이.</pre></div>
+  </div>
+  <div class="shots one"><figure><button type="button" aria-label="크게 보기: 완성 예시: 9개 중 4번을 크게 한 장"><img src="img/char_final.webp" alt="완성 예시: 9개 중 4번을 크게 한 장" loading="lazy"></button><figcaption>완성 예시: 9개 중 4번을 크게 한 장</figcaption></figure></div></div>
+  <details class="toggle"><summary>결과 예시 보기 (STEP 3 한 장 크게)</summary>
+    <div class="shots wide"><figure><button type="button" aria-label="크게 보기: STEP 3 결과: 9개 중 4번을 크게 한 장"><img src="img/r_big.webp" alt="STEP 3 결과: 9개 중 4번을 크게 한 장" loading="lazy"></button><figcaption>STEP 3 결과: 9개 중 4번을 크게 한 장</figcaption></figure></div>
+  </details>
+</section>
+
+<section class="mod" id="m-7">
+  <header><div class="num">7</div><h2 class="t">구글 플로우로 동영상 만들기<small>설치하고 로그인 · 내 캐릭터로 동영상 · 저장하기</small></h2></header>
+  <div class="route"><span class="who">설치</span><ol><li>Play 스토어 · App Store</li><li>Google Flow 검색</li><li>만든 곳 Google 확인</li><li>설치</li><li>열기</li></ol><p class="tip">비슷한 이름의 "Google Flow Music"이나 다른 회사의 "Flow" 앱이 아니에요. 아래 QR이나 버튼으로 받으면 정확해요.</p></div>
+  <div class="shots one" style="grid-template-columns:minmax(0,340px)"><figure><button type="button" aria-label="크게 보기: ① 이 아이콘의 Google Flow인지 확인 · ② 설치(설치 후엔 &quot;사용&quot;)"><img src="img/gf1.webp" alt="① 이 아이콘의 Google Flow인지 확인 · ② 설치(설치 후엔 &quot;사용&quot;)" loading="lazy"></button><figcaption>① 이 아이콘의 Google Flow인지 확인 · ② 설치(설치 후엔 &quot;사용&quot;)</figcaption></figure></div>
+  <div class="stores">
+    <div class="store"><div class="sqr" data-qr="https://play.google.com/store/apps/details?id=com.google.android.apps.labs.whisk" aria-label="안드로이드용 Google Flow QR"></div><div><b>안드로이드 (갤럭시)</b><span>Play 스토어</span><a class="btn" href="https://play.google.com/store/apps/details?id=com.google.android.apps.labs.whisk" target="_blank" rel="noopener">Google Flow 받기</a></div></div>
+    <div class="store"><div class="sqr" data-qr="https://apps.apple.com/app/google-flow/id6751294549" aria-label="아이폰용 Google Flow QR"></div><div><b>아이폰</b><span>App Store</span><a class="btn" href="https://apps.apple.com/app/google-flow/id6751294549" target="_blank" rel="noopener">Google Flow 받기</a></div></div>
+  </div>
+  <div class="route"><span class="who">처음 로그인</span><ol><li>Google Flow로 만들기</li><li>내 계정으로 계속</li><li>계속</li><li>동의함</li><li>계속</li><li>시작하기</li></ol><p class="tip">로그인은 처음 한 번만 해요. 휴대폰과 앱 버전에 따라 화면이 조금 달라 보일 수 있어요.</p></div>
+  <div class="shots one" style="grid-template-columns:minmax(0,340px)"><figure><button type="button" aria-label="크게 보기: 로그인이 끝난 첫 화면: ③ 내 계정 확인 · ④ + 신규로 새 프로젝트"><img src="img/gf2.webp" alt="로그인이 끝난 첫 화면: ③ 내 계정 확인 · ④ + 신규로 새 프로젝트" loading="lazy"></button><figcaption>로그인이 끝난 첫 화면: ③ 내 계정 확인 · ④ + 신규로 새 프로젝트</figcaption></figure></div>
+  <p class="lead">1번에서 확인한 구글 계정으로 들어가요.</p>
+
+  <h3>동영상 만들기</h3>
+  <div class="route"><span class="who">기본 순서</span><ol><li>+ 신규</li><li>입력창에 장면 쓰기</li><li>오른쪽 아래 버튼에서 동영상 고르기</li><li>9:16 · x1 고르기</li><li>→ 눌러 생성</li></ol><p class="tip">완성된 영상은 프로젝트에 저절로 저장돼요. 동영상은 크레딧이 들어서 계정에 따라 만들 수 있는 횟수가 정해져 있어요.</p></div>
+
+  <p><b>예시 1. 글만으로 만들기</b></p>
+  <div class="examples">
+    <div class="copy short"><pre id="ex1">가을 공원 산책길에서 작은 강아지와 함께 커피를 들고 천천히 걷는 할머니. 따뜻한 오후 햇살, 바람에 노란 낙엽이 흩날리는 장면. 카메라가 옆에서 천천히 따라가는 영화 같은 느낌, 세로 화면.</pre><div class="bar"><span></span><button class="btn" type="button" data-copy="ex1">프롬프트 복사</button></div></div>
+  </div>
+
+  <p><b>예시 2. 내가 만든 캐릭터 그림 넣어서 만들기</b></p>
+  <div class="route"><ol><li>① + 눌러 내 그림 추가</li><li>② 그림이 붙었는지 확인</li><li>③ 원하는 장면 쓰기</li><li>④ 동영상 x1 누르기</li><li>⑤ 동영상 · ⑥ 9:16 · ⑦ x1 고르기</li><li>⑨ → 눌러 생성</li></ol><p class="tip">⑧ 한 번 만들 때 AI 크레딧이 들어요(예: 10 크레딧). x2, x4로 늘리면 크레딧도 그만큼 더 들어요.</p></div>
+  <div class="shots">
+    <figure><button type="button" aria-label="크게 보기: ① + · ② 붙인 그림 · ③ 장면 쓰기 · ④ 동영상 x1"><img src="img/gf3.webp" alt="① + · ② 붙인 그림 · ③ 장면 쓰기 · ④ 동영상 x1" loading="lazy"></button><figcaption>① + · ② 붙인 그림 · ③ 장면 쓰기 · ④ 동영상 x1</figcaption></figure>
+    <figure><button type="button" aria-label="크게 보기: ⑤ 동영상 · ⑥ 9:16 · ⑦ x1 · ⑧ 크레딧 · ⑨ → 생성"><img src="img/gf4.webp" alt="⑤ 동영상 · ⑥ 9:16 · ⑦ x1 · ⑧ 크레딧 · ⑨ → 생성" loading="lazy"></button><figcaption>⑤ 동영상 · ⑥ 9:16 · ⑦ x1 · ⑧ 크레딧 · ⑨ → 생성</figcaption></figure>
+  </div>
+  <div class="pair tall"><div>
+    <div class="examples" style="margin:0">
+    <div class="copy short"><pre id="ex2">첨부한 캐릭터가 주인공이야. 얼굴과 옷, 강아지 모습은 그대로 두고, 이 캐릭터가 아이스커피를 들고 강아지와 함께 햇살 좋은 강가 산책길을 신나게 걷다가 카메라를 보고 웃으며 손을 흔드는 장면. 귀여운 3D 애니메이션 느낌, 세로 화면, 글자 없이.</pre><div class="bar"><span></span><button class="btn" type="button" data-copy="ex2">프롬프트 복사</button></div></div>
+    <div class="copy short"><pre id="ex3">강아지는 꼬리를 흔들고 여자 주인공은 &quot;오늘 하루도 너무 수고많았어요&quot;라고 말하면 좋겠어.</pre><div class="bar"><span></span><button class="btn" type="button" data-copy="ex3">프롬프트 복사</button></div></div>
+    </div>
+  </div>
+  <div class="shots one"><figure><button type="button" aria-label="크게 보기: 넣을 그림 예시: 6번에서 만든 캐릭터"><img src="img/char_walk.webp" alt="넣을 그림 예시: 6번에서 만든 캐릭터" loading="lazy"></button><figcaption>넣을 그림 예시: 6번에서 만든 캐릭터</figcaption></figure></div></div>
+  <p><b>이렇게 나왔어요</b></p>
+  <div class="video" style="max-width:280px"><video controls playsinline preload="metadata" poster="media/flow-char.jpg"><source src="media/flow-char.mp4" type="video/mp4">이 브라우저에서는 영상을 재생할 수 없어요.</video></div>
+  <p class="lead">캐릭터 그림과 "강아지는 꼬리를 흔들고, '오늘 하루도 너무 수고많았어요'라고 말하면 좋겠어" 프롬프트로 만든 8초 영상이에요. 소리도 함께 나와요.</p>
+  <h3>완성된 영상 휴대폰에 저장하기</h3>
+  <div class="route"><ol><li>⑩ 프로젝트에서 ▶ 표시가 있는 영상 누르기</li><li>⑪ 오른쪽 위 ⋮</li><li>⑫ 다운로드</li><li>⑬ 720p 원본 크기</li><li>⑭ 다운로드</li></ol><p class="tip">1080p, 4K는 Google AI 유료 요금제에서만 받을 수 있어요. 720p로도 카톡·문자로 보내기에 충분해요. 같은 메뉴의 "공유"로 바로 카톡에 보낼 수도 있어요.</p></div>
+  <div class="shots three">
+    <figure><button type="button" aria-label="크게 보기: ⑩ ▶ 표시가 있는 게 동영상"><img src="img/gf5.webp" alt="⑩ ▶ 표시가 있는 게 동영상" loading="lazy"></button><figcaption>⑩ ▶ 표시가 있는 게 동영상</figcaption></figure>
+    <figure><button type="button" aria-label="크게 보기: ⑪ ⋮ 누르고 ⑫ 다운로드"><img src="img/gf6.webp" alt="⑪ ⋮ 누르고 ⑫ 다운로드" loading="lazy"></button><figcaption>⑪ ⋮ 누르고 ⑫ 다운로드</figcaption></figure>
+    <figure><button type="button" aria-label="크게 보기: ⑬ 720p 고르고 ⑭ 다운로드"><img src="img/gf7.webp" alt="⑬ 720p 고르고 ⑭ 다운로드" loading="lazy"></button><figcaption>⑬ 720p 고르고 ⑭ 다운로드</figcaption></figure>
+  </div>
+  <p class="lead">그림이 있으면 얼굴과 옷이 그대로 유지돼서 "나만의 캐릭터 영상"이 돼요. 사진을 움직이게만 하고 싶으면 첫 화면의 사진 움직이기(Animate)를 써도 돼요.</p>
+</section>
+
+<section class="mod" id="m-8">
+  <header><div class="num">8</div><h2 class="t">브레이브 설치<small>광고 없이 유튜브 보기 · PIP 작은 화면</small></h2></header>
+  <p>브레이브(Brave)는 광고를 막아 주는 브라우저예요. 브레이브로 유튜브를 열면 광고 없이 볼 수 있고, 작은 화면(PIP)으로 띄워 다른 앱을 쓰면서 들을 수도 있어요.</p>
+
+  <h3><span class="s">1</span>앱 받기</h3>
+  <div class="route"><ol><li>Play 스토어 · App Store</li><li>브레이브 검색</li><li>만든 곳 Brave Software 확인</li><li>설치</li></ol></div>
+  <div class="shots one" style="grid-template-columns:minmax(0,420px)"><figure><button type="button" aria-label="크게 보기: 만든 곳 Brave Software인지 확인해요"><img src="img/br1.webp" alt="만든 곳 Brave Software인지 확인해요" loading="lazy"></button><figcaption>만든 곳 Brave Software인지 확인해요</figcaption></figure></div>
+  <div class="stores">
+    <div class="store"><div class="sqr" data-qr="https://play.google.com/store/apps/details?id=com.brave.browser" aria-label="안드로이드용 브레이브 QR"></div><div><b>안드로이드 (갤럭시)</b><span>Play 스토어</span><a class="btn" href="https://play.google.com/store/apps/details?id=com.brave.browser" target="_blank" rel="noopener">브레이브 받기</a></div></div>
+    <div class="store"><div class="sqr" data-qr="https://apps.apple.com/app/brave-private-web-browser/id1052879175" aria-label="아이폰용 브레이브 QR"></div><div><b>아이폰</b><span>App Store</span><a class="btn" href="https://apps.apple.com/app/brave-private-web-browser/id1052879175" target="_blank" rel="noopener">브레이브 받기</a></div></div>
+  </div>
+
+  <h3><span class="s">2</span>처음 열 때 설정</h3>
+  <div class="steps-b">
+    <div class="sb"><span class="sbn">①</span><div><b>기본 브라우저로 바꾸지 않기</b><span>"기본 브라우저로 설정할까요?"가 나오면 <em>취소</em>를 눌러요. 크롬은 그대로 써요.</span></div></div>
+    <div class="sb"><span class="sbn">②</span><div><b>정보 보내기 체크 해제</b><span>"Brave 개선에 참여" 화면에서 체크를 모두 풀고 <em>계속</em>을 눌러요.</span></div></div>
+  </div>
+  <div class="pair" style="grid-template-columns:minmax(0,220px) minmax(0,1fr)">
+    <div class="shots one"><figure><button type="button" aria-label="크게 보기: ① 기본 브라우저 창에서 취소"><img src="img/br2a.webp" alt="① 기본 브라우저 창에서 취소" loading="lazy"></button><figcaption>① 기본 브라우저 창에서 취소</figcaption></figure></div>
+    <div class="shots one"><figure><button type="button" aria-label="크게 보기: ② 체크 모두 풀고 ③ 계속"><img src="img/br2b.webp" alt="② 체크 모두 풀고 ③ 계속" loading="lazy"></button><figcaption>② 체크 모두 풀고 ③ 계속</figcaption></figure></div>
+  </div>
+
+  <h3><span class="s">3</span>유튜브 열기</h3>
+  <div class="route"><ol><li>브레이브 위쪽 검색창</li><li>"유튜브" 검색</li><li>YouTube 누르기</li><li>보고 싶은 영상 검색</li></ol><p class="tip">주소창 옆 사자 모양을 누르면 막은 광고 숫자가 보여요. 유튜브 앱이 아니라 꼭 브레이브 안에서 열어요.</p></div>
+  <div class="shots one" style="grid-template-columns:minmax(0,440px)"><figure><button type="button" aria-label="크게 보기: ① 검색창 누르고 ② &quot;유튜브&quot; 검색"><img src="img/br3a.webp" alt="① 검색창 누르고 ② &quot;유튜브&quot; 검색" loading="lazy"></button><figcaption>① 검색창 누르고 ② &quot;유튜브&quot; 검색</figcaption></figure></div>
+  <div class="shots three">
+    <figure><button type="button" aria-label="크게 보기: ③ YouTube 누르기"><img src="img/br3b.webp" alt="③ YouTube 누르기" loading="lazy"></button><figcaption>③ YouTube 누르기</figcaption></figure>
+    <figure><button type="button" aria-label="크게 보기: ④ 사자 모양: 막은 광고 확인"><img src="img/br3c.webp" alt="④ 사자 모양: 막은 광고 확인" loading="lazy"></button><figcaption>④ 사자 모양: 막은 광고 확인</figcaption></figure>
+    <figure><button type="button" aria-label="크게 보기: ⑤ 보고 싶은 영상 검색"><img src="img/br3d.webp" alt="⑤ 보고 싶은 영상 검색" loading="lazy"></button><figcaption>⑤ 보고 싶은 영상 검색</figcaption></figure>
+  </div>
+
+  <h3><span class="s">4</span>작은 화면(PIP)으로 보기</h3>
+  <div class="route"><ol><li>영상 재생</li><li>주소창의 작은 화면 버튼 누르기</li><li>홈으로 나가도 영상이 작게 떠 있어요</li></ol><p class="tip">갤럭시는 주소창 오른쪽, 아이폰은 영상 화면의 작은 화면 버튼을 눌러요. 휴대폰과 앱 버전에 따라 버튼 위치가 조금 다를 수 있어요.</p></div>
+  <div class="shots one" style="grid-template-columns:minmax(0,300px)"><figure><button type="button" aria-label="크게 보기: 작은 화면 버튼: 왼쪽 갤럭시 · 오른쪽 아이폰"><img src="img/br4.webp" alt="작은 화면 버튼: 왼쪽 갤럭시 · 오른쪽 아이폰" loading="lazy"></button><figcaption>작은 화면 버튼: 왼쪽 갤럭시 · 오른쪽 아이폰</figcaption></figure></div>
+  <div class="note"><b>알아 두세요</b>광고 없이 보는 것은 브레이브의 광고 차단 기능 덕분이에요. 유튜브 프리미엄과 달리 오프라인 저장 같은 기능은 없어요.</div>
+</section>
+<a class="home" href="#m-1">↑ 처음으로</a>
+</main>
+
+<footer>
+  <div><b>강사</b> FlowDX 이애진 · ai@flowdx.kr · flowdx.kr</div>
+  <div>© FlowDX</div>
+</footer>
+</div>
+
+<dialog id="lb" aria-label="사진 크게 보기"><button type="button" id="lbx">닫기</button><img id="lbimg" alt=""><p id="lbcap"></p></dialog>
+<div class="toast" id="toast" role="status"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+(function(){
+  var $=function(id){return document.getElementById(id)};
+  var tt;function toast(m){var t=$("toast");t.textContent=m;t.classList.add("on");clearTimeout(tt);tt=setTimeout(function(){t.classList.remove("on")},1800)}
+  function fallback(text){var ta=document.createElement("textarea");ta.value=text;ta.setAttribute("readonly","");ta.style.position="fixed";ta.style.opacity="0";document.body.appendChild(ta);ta.select();var ok=false;try{ok=document.execCommand("copy")}catch(e){}document.body.removeChild(ta);return ok}
+  function copy(text,btn,label){
+    function done(){toast("복사했어요. 붙여 넣으세요.");if(btn){var o=btn.textContent;btn.classList.add("done");btn.textContent=label||"✓ 복사됨";setTimeout(function(){btn.classList.remove("done");btn.textContent=o},1600)}}
+    try{navigator.clipboard.writeText(text).then(done,function(){fallback(text)?done():toast("길게 눌러 직접 복사해 주세요.")})}catch(e){fallback(text)?done():toast("길게 눌러 직접 복사해 주세요.")}
+  }
+  document.querySelectorAll("[data-copy]").forEach(function(b){b.addEventListener("click",function(){copy($(b.dataset.copy).textContent,b)})});
+  document.querySelectorAll("[data-copytext]").forEach(function(b){b.addEventListener("click",function(){copy(b.dataset.copytext,b)})});
+  document.querySelectorAll(".chip").forEach(function(b){b.addEventListener("click",function(){copy(b.textContent.trim(),null);b.classList.add("done");setTimeout(function(){b.classList.remove("done")},1600)})});
+  // lightbox
+  var lb=$("lb");
+  document.querySelectorAll("figure button").forEach(function(b){b.addEventListener("click",function(){var im=b.querySelector("img");$("lbimg").src=im.src;$("lbimg").alt=im.alt;$("lbcap").textContent=im.alt;try{lb.showModal()}catch(e){lb.setAttribute("open","")}})});
+  $("lbx").onclick=function(){lb.close()};
+  lb.addEventListener("click",function(e){if(e.target===lb||e.target.id==="lbimg")lb.close()});
+  // qr
+  try{new QRCode($("qr"),{text:"https://script.google.com/macros/s/AKfycby0e3HhfTTZMphw3a6dlG48DngAmkplYxyXzRJYCcfvsj6MHZShHQ4x5D4-ajeN1PuhKg/exec",width:150,height:150,correctLevel:QRCode.CorrectLevel.M})}catch(e){$("qr").hidden=true}
+  document.querySelectorAll("[data-qr]").forEach(function(el){try{new QRCode(el,{text:el.dataset.qr,width:120,height:120,correctLevel:QRCode.CorrectLevel.M})}catch(e){el.hidden=true}});
+  // toc highlight
+  var links=[].slice.call(document.querySelectorAll("nav.toc a"));
+  if("IntersectionObserver" in window){
+    var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){links.forEach(function(a){a.classList.toggle("on",a.getAttribute("href")==="#"+e.target.id)})}})},{rootMargin:"-20% 0px -70% 0px"});
+    document.querySelectorAll("section.mod").forEach(function(s){io.observe(s)});
+  }
+})();
+</script>
+
+</body>
+</html>
