@@ -12,21 +12,21 @@
 <style>
 /* Layout: 왼쪽 고정 차례(데스크톱) + 본문 한 줄 흐름. 회차(1차/2차)는 굵은 띠, 단계는 번호 원. */
 :root{
-  --paper:#f6f7f4; --surface:#ffffff; --ink:#18231f; --muted:#5d6a64; --line:#dde3de;
-  --accent:#1f5e50; --accent-soft:#e3efe9; --gold:#a8701c; --gold-soft:#f7ecd8; --warn:#b3382c; --warn-soft:#fbe9e6;
-  --code:#f0f2ef;
+  --paper:#f6f7fb; --surface:#ffffff; --ink:#161b2e; --muted:#5a6178; --line:#dde1ec;
+  --accent:#203ec2; --accent-soft:#e8ecfc; --gold:#a8701c; --gold-soft:#f7ecd8; --warn:#b3382c; --warn-soft:#fbe9e6;
+  --code:#f1f3f9;
   --f-display:"Gowun Batang","Noto Serif KR",serif;
   --f-body:"Noto Sans KR",-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;
   --f-mono:ui-monospace,"SFMono-Regular",Menlo,Consolas,monospace;
 }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
-  --paper:#121816; --surface:#1a2220; --ink:#e7ece9; --muted:#9aa8a1; --line:#2d3834;
-  --accent:#6cc2a9; --accent-soft:#1d332c; --gold:#e0b062; --gold-soft:#33291a; --warn:#f08a7e; --warn-soft:#3a201d;
-  --code:#141b19; color-scheme:dark}}
+  --paper:#10131f; --surface:#181c2c; --ink:#e8eaf3; --muted:#9aa1ba; --line:#2a3048;
+  --accent:#8ea2ff; --accent-soft:#1f2650; --gold:#e0b062; --gold-soft:#33291a; --warn:#f08a7e; --warn-soft:#3a201d;
+  --code:#131726; color-scheme:dark}}
 :root[data-theme="dark"]{
-  --paper:#121816; --surface:#1a2220; --ink:#e7ece9; --muted:#9aa8a1; --line:#2d3834;
-  --accent:#6cc2a9; --accent-soft:#1d332c; --gold:#e0b062; --gold-soft:#33291a; --warn:#f08a7e; --warn-soft:#3a201d;
-  --code:#141b19; color-scheme:dark}
+  --paper:#10131f; --surface:#181c2c; --ink:#e8eaf3; --muted:#9aa1ba; --line:#2a3048;
+  --accent:#8ea2ff; --accent-soft:#1f2650; --gold:#e0b062; --gold-soft:#33291a; --warn:#f08a7e; --warn-soft:#3a201d;
+  --code:#131726; color-scheme:dark}
 *{box-sizing:border-box}
 body{background:var(--paper);color:var(--ink);font-family:var(--f-body);font-size:16.5px;line-height:1.7;word-break:keep-all}
 a{color:var(--accent)}
@@ -208,7 +208,7 @@ footer{grid-column:1/-1;margin-top:56px;padding-top:20px;border-top:1px solid va
 footer b{color:var(--ink)}
 
 dialog{border:0;padding:0;background:transparent;max-width:96vw;max-height:94vh}
-dialog::backdrop{background:rgba(10,14,13,.82)}
+dialog::backdrop{background:rgba(12,16,34,.85)}
 dialog img{display:block;max-width:96vw;max-height:88vh;width:auto;height:auto;border-radius:8px;background:#fff}
 dialog p{color:#fff;text-align:center;margin:8px auto 0;font-size:15px}
 dialog button{position:fixed;top:calc(12px + env(safe-area-inset-top,0px));right:calc(12px + env(safe-area-inset-right,0px));font:inherit;font-weight:700;padding:8px 14px;border-radius:8px;border:0;background:#fff;color:#111;cursor:pointer}
@@ -216,11 +216,37 @@ dialog button{position:fixed;top:calc(12px + env(safe-area-inset-top,0px));right
 .toast.on{opacity:1}
 @media (prefers-reduced-motion:reduce){.toast{transition:none}html{scroll-behavior:auto}}
 html{scroll-behavior:smooth}
+
+html.locked .wrap{display:none}
+#gate{display:none}
+html.locked #gate{display:grid;position:fixed;inset:0;z-index:50;place-items:center;background:var(--paper);padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+#gate form{width:100%;max-width:340px;box-sizing:border-box;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:28px 24px;display:grid;gap:12px;text-align:center}
+#gate h2{margin:0;font-family:var(--f-display);font-size:24px}
+#gate p{margin:0;color:var(--muted);font-size:15px}
+#gate input{width:100%;min-width:0;box-sizing:border-box;font:inherit;font-size:28px;letter-spacing:.4em;text-align:center;padding:10px;border:2px solid var(--line);border-radius:12px;background:var(--paper);color:var(--ink)}
+#gate input:focus{outline:none;border-color:var(--accent)}
+#gate .err{color:var(--warn);min-height:1.4em;font-size:14px}
 </style>
 </head>
 <body>
 
+<script>try{if(sessionStorage.getItem("ok")!=="1")document.documentElement.classList.add("locked")}catch(e){document.documentElement.classList.add("locked")}</script>
 
+
+<div id="gate"><form id="gateform" autocomplete="off">
+  <h2>모바일 AI 연수</h2>
+  <p>비밀번호 4자리를 넣어 주세요.</p>
+  <input id="gatepw" type="password" inputmode="numeric" maxlength="8" aria-label="비밀번호">
+  <button class="btn" type="submit">들어가기</button>
+  <div class="err" id="gateerr" role="alert"></div>
+</form></div>
+<script>(function(){
+function h(s){var x=0x811c9dc5;for(var i=0;i<s.length;i++){x^=s.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return ("0000000"+x.toString(16)).slice(-8)}
+var f=document.getElementById("gateform");if(!f)return;
+f.addEventListener("submit",function(e){e.preventDefault();var v=document.getElementById("gatepw").value.trim();
+if(h(v)==="cf189605"){try{sessionStorage.setItem("ok","1")}catch(_){}document.documentElement.classList.remove("locked");window.scrollTo(0,0)}
+else{document.getElementById("gateerr").textContent="비밀번호가 맞지 않아요. 다시 넣어 주세요.";document.getElementById("gatepw").value=""}});
+})();</script>
 <div class="wrap">
 <header class="hero">
   <div>
